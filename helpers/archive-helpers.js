@@ -34,7 +34,7 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   fs.readFile(exports.paths.list, 'utf8', function(error, content) {
-    var isInList = content.indexOf(url.slice(1)) !== -1;
+    var isInList = content.indexOf(url) !== -1;
     callback(isInList);
   });
 };
@@ -45,7 +45,11 @@ exports.addUrlToList = function(url, callback) {
   });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(url, callback) {
+  fs.readdir(exports.paths.archivedSites, function(error, files) {
+    var isArchived = files.indexOf(url) !== -1;
+    callback(isArchived);
+  });
 };
 
 exports.downloadUrls = function() {
