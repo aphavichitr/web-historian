@@ -1,1 +1,0 @@
-* * * * * node /Users/student/Codes/2016-04-web-historian/workers/htmlfetcher.js

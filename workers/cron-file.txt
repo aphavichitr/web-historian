@@ -1,0 +1,2 @@
+* * * * * /usr/local/bin/node $PWD/htmlfetcher.js >> $PWD/cron-log.txt 2>&1
+* * * * * echo 'Cron did it!' > $PWD/cron-log.txt
