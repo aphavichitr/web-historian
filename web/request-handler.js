@@ -46,6 +46,4 @@ exports.handleRequest = function (req, res) {
     });
 
   }
-
-  // res.end(archive.paths.list);
 };
