@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var httpHelp = require('../web/http-helpers');
 var _ = require('underscore');
 
 /*
@@ -40,7 +41,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  fs.appendFile(exports.paths.list, '\n' + url, function(error, content) {
+  fs.appendFile(exports.paths.list, url + '\n', function(error, content) {
     callback();
   });
 };
@@ -52,5 +53,10 @@ exports.isUrlArchived = function(url, callback) {
   });
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(urlArray) {
+  _.each(urlArray, function(url) {
+    httpHelp.getPage(url, function(body) {
+      fs.writeFile(exports.paths.archivedSites + '/' + url, body);
+    });
+  });
 };

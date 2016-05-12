@@ -111,7 +111,7 @@ describe('archive helpers', function() {
 
   describe('#addUrlToList', function () {
     it('should add a url to the list', function (done) {
-      var urlArray = ['example1.com', 'example2.com'];
+      var urlArray = ['example1.com', 'example2.com\n'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
 
       archive.addUrlToList('someurl.com', function () {
@@ -144,7 +144,7 @@ describe('archive helpers', function() {
 
   describe('#downloadUrls', function () {
     it('should download all pending urls in the list', function (done) {
-      var urlArray = ['www.testsite2.com', 'www.testsite1.com'];
+      var urlArray = ['www.example.com', 'www.google.com', 'www.hackreactor.com'];
       archive.downloadUrls(urlArray);
 
       // Ugly hack to wait for all downloads to finish.

@@ -1,6 +1,8 @@
 var path = require('path');
 var fs = require('fs');
+var qs = require('querystring');
 var archive = require('../helpers/archive-helpers');
+var http = require('http');
 
 exports.headers = {
   'access-control-allow-origin': '*',
@@ -32,3 +34,47 @@ exports.serveAssets = function(res, asset, callback) {
   });
 };
 // As you progress, keep thinking about what helper functions you can put here!
+
+exports.getPostData = function(req, callback) {
+  var body = '';
+  req.on('data', function(data) {
+    body += data;
+  });
+
+  req.on('end', function() {
+    callback(qs.parse(body).url);
+  });
+};
+
+exports.getPage = function(url, callback) {
+  var options = {
+    hostname: url,
+    port: 80, 
+    path: '/',
+    method: 'GET',
+    headers: {
+      'Content-Type': 'text/html'
+    }
+  };
+
+  var req = http.request(options, function(res) {
+    res.on('error', function(error) {
+      console.log('response', error);
+    });
+
+    var body = '';
+    res.on('data', function(chunk) {
+      body += chunk;
+    });
+
+    res.on('end', function() {
+      callback(body);
+    });
+  });
+
+  req.on('error', function(error) {
+    console.log('Request Error:', error);
+  });
+
+  req.end();
+};

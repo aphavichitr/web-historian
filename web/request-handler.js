@@ -10,31 +10,42 @@ exports.handleRequest = function (req, res) {
 
   var assetPath;
   if (method === 'GET') {
+
     if (url === '/') {
       res.writeHead(200, archive.headers);
       assetPath = __dirname + '/public/index.html';
     } else {
-      assetPath = __dirname + url;
+      assetPath = archive.paths.archivedSites + url;
     }
+
+    httpHelp.serveAssets(res, assetPath, function(error, content) {
+      res.write(content);
+      res.end();
+    });
+
   } else if (method === 'POST') {
-    archive.addUrlToList(url, function() {
-      archive.isUrlArchived(url, function(isArchived) {
-        if (isArchived) {
-          res.writeHead(200, archive.headers);
-          assetPath = archive.paths.archivedSites + url;
-        } else {
-          res.writeHead(302, archive.headers);
-          assetPath = __dirname + '/public/loading.html';
-        }
+    httpHelp.getPostData(req, function(url) {
+      archive.addUrlToList(url, function() {
+        archive.isUrlArchived(url, function(isArchived) {
+
+          if (isArchived) {
+            res.writeHead(200, archive.headers);
+            assetPath = archive.paths.archivedSites + '/' + url;
+          } else {
+            res.writeHead(302, archive.headers);
+            assetPath = __dirname + '/public/loading.html';
+          }
+
+          httpHelp.serveAssets(res, assetPath, function(error, content) {
+            res.write(content);
+            res.end();
+          });
+
+        });
       });
     });
-  }
 
-  httpHelp.serveAssets(res, assetPath, function(error, content) {
-    // console.log(content);
-    res.write(content);
-    res.end();
-  });
+  }
 
   // res.end(archive.paths.list);
 };
