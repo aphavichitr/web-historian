@@ -25,25 +25,40 @@ exports.handleRequest = function (req, res) {
 
   } else if (method === 'POST') {
     httpHelp.getPostData(req, function(url) {
-      archive.addUrlToList(url, function() {
-        archive.isUrlArchived(url, function(isArchived) {
+      archive.isUrlArchived(url, function(isArchived) {
 
-          if (isArchived) {
-            res.writeHead(200, archive.headers);
-            assetPath = archive.paths.archivedSites + '/' + url;
-          } else {
-            res.writeHead(302, archive.headers);
-            assetPath = __dirname + '/public/loading.html';
-          }
+        if (isArchived) {
+          res.writeHead(200, archive.headers);
+          assetPath = archive.paths.archivedSites + '/' + url;
 
           httpHelp.serveAssets(res, assetPath, function(error, content) {
             res.write(content);
             res.end();
           });
+        } else {
+          archive.isUrlInList(url, function(isInList) {
+            if (isInList) {
+              res.writeHead(302, archive.headers);
+              assetPath = __dirname + '/public/loading.html';
 
-        });
+              httpHelp.serveAssets(res, assetPath, function(error, content) {
+                res.write(content);
+                res.end();
+              });
+            } else {
+              archive.addUrlToList(url, function() {
+                res.writeHead(302, archive.headers);
+                assetPath = __dirname + '/public/loading.html';
+
+                httpHelp.serveAssets(res, assetPath, function(error, content) {
+                  res.write(content);
+                  res.end();
+                });
+              });
+            }
+          });
+        }
       });
     });
-
   }
 };

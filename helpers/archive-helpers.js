@@ -1,7 +1,9 @@
-var fs = require('fs');
 var path = require('path');
 var httpHelp = require('../web/http-helpers');
 var _ = require('underscore');
+
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -26,11 +28,15 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(callback) {
-  fs.readFile(exports.paths.list, 'utf8', function(error, content) {
-    var urlArray = content.split('\n');
-    callback(urlArray);
-  });
+exports.readListOfUrls = function() {
+  return fs.readFileAsync(exports.paths.list, 'utf8')
+    .then(function(content) {
+      var urlArray = content.split('\n');
+      return urlArray;
+    })
+    .catch(function(error) {
+      throw new Error(error);
+    });
 };
 
 exports.isUrlInList = function(url, callback) {

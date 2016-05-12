@@ -2,6 +2,7 @@
 // that are waiting.
 var archive = require('../helpers/archive-helpers');
 
-archive.readListOfUrls(function(urlArray) {
-  archive.downloadUrls(urlArray);
-});
+archive.readListOfUrls()
+  .then(function(urlArray) {
+    archive.downloadUrls(urlArray);
+  });
